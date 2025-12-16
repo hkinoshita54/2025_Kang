@@ -41,14 +41,16 @@ for (i in 1:length(seu_list)) {
 rm(bcmvn, bcmvn.max, metadata, seu, sweep.list, sweep.stats, annotations, homotypic.prop, i, nExp.poi, nExp.poi.adj, optimal.pk)
 
 # visualize doublet
+df_path <- file.path(plot_path, "doublet_finder")
+fs::dir_create(df_path)
 for(i in 1:length(seu_list)){
   dim <- DimPlot(seu_list[[i]], group.by = "doublet_finder") + NoAxes()
   ggsave(paste0("DoubletFinder_", as.character(sample_name[i]), ".png"), plot = dim, 
-         path = plot_path, 
+         path = df_path, 
          width = 4, height = 3, units = "in", dpi = 150)
   vln <- VlnPlot(seu_list[[i]], features = c("nFeature_RNA", "nCount_RNA"), group.by = "doublet_finder")
   ggsave(paste0("DoubletFinder_vln_", as.character(sample_name[i]), ".png"), plot = vln, 
-         path = plot_path, 
+         path = df_path, 
          width = 5, height = 3, units = "in", dpi = 150)
   rm(dim, vln, i)
 }

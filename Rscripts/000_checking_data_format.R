@@ -45,8 +45,22 @@ for (i in 0:(num_chunks - 1)) {
 }
 
 # Combine all chunks into one sparse matrix
-# final_matrix <- do.call(rbind, sparse_list)
-toy_mtx <- do.call(rbind, sparse_list)
+final_matrix <- do.call(rbind, sparse_list)
 
 # Save final result
 saveRDS(final_matrix, "data/GSE206785_sparse_matrix.rds")
+
+# data distribution
+hist(final_matrix@x, breaks = 50)
+### values are near 1 with some high values > might be log-transformed
+
+# check the total sum of the counts
+expm1(final_matrix) %>% rowSums() %>% tail()
+### total sum of the counts are not same for all the cells, meaning the data is NOT normalized
+### From here I assume the data is just log-transformed
+
+# recover raw counts
+raw_mtx <- expm1(final_matrix)
+str(raw_mtx)
+raw_mtx@x <- round(raw_mtx@x)
+saveRDS(raw_mtx, "data/GSE206785_raw_matrix.rds")
