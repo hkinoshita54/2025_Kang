@@ -1,3 +1,4 @@
+library(DoubletFinder)
 for (i in 1:length(seu_list)) {
   # Pre-process seurat object with standard seurat workflow
   seu <- NormalizeData(seu_list[[i]])

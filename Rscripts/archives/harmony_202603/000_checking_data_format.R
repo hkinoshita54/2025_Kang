@@ -1,5 +1,5 @@
 # to check the data format and structure before reading in
-# with help from ChatGPT
+library(tidyverse)
 library(data.table)
 library(Matrix)
 
@@ -12,20 +12,19 @@ readLines("data/GSE206785_scgex.txt.gz", n = 5)
 
 df <- fread("data/GSE206785_scgex.txt.gz", nrows = 5)  # Read only first 5 rows
 str(df)  # Check structure
-### data looks already
+### data looks already normalized
 
 # determine the number of rows in the file
 total_rows <- system("gunzip -c data/GSE206785_scgex.txt.gz | wc -l", intern = TRUE)
-# total_rows <- as.numeric(total_rows) - 1  # Subtract 1 for the header
+total_rows <- as.numeric(total_rows) - 1  # Subtract 1 for the header
 print(total_rows)
 
 # Read in Chunks & Convert to Sparse Matrix
 colnames <- fread("data/GSE206785_scgex.txt.gz", nrows = 1, header = F) %>% unlist()
-chunk_size <- 10  # Adjust based on available memory
-# num_chunks <- ceiling(total_rows / chunk_size)
-num_chunks <- 2
-sparse_list <- list()  # Store chunks
+chunk_size <- 10000  # Adjust based on available memory
+num_chunks <- ceiling(total_rows / chunk_size)
 
+sparse_list <- list()  # Store chunks
 for (i in 0:(num_chunks - 1)) {
   skip_rows <- i * chunk_size + 1
   

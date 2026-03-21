@@ -11,8 +11,9 @@ library(DoubletFinder)
 # Make directories ----
 # fs::dir_create(c("plot", "result", "RDSfiles", "Rscripts"))
 plot_path <- file.path("plot", analysis_step)
+fp_path <- file.path(plot_path, "feature_plot")
 res_path <- file.path("result", analysis_step)
-fs::dir_create(c(plot_path, res_path))
+fs::dir_create(c(plot_path, res_path, fp_path))
 
 # Create a Seurat object with some patient data ----
 pts_data <- read_excel("data/13059_2022_2828_MOESM2_ESM.xlsx", skip = 1) %>% as.data.frame
@@ -92,8 +93,6 @@ DimPlot(seu, group.by = "pt_id") + NoAxes() +
 ggsave("sample.png", path = plot_path, width = 5.5, height = 3, units = "in", dpi = 150)
 
 # Check markers by feature plots
-fp_path <- file.path(plot_path, "feature_plot")
-fs::dir_create(c(fp_path))
 features <- readLines("aux_data/gene_set/010_cellgroup.txt")
 
 save_fp <- function(feature, seu, path){
@@ -149,10 +148,12 @@ saveRDS(seu, file = file.path("RDSfiles", "seu_012_cellgroup.RDS"))
 # additional plots
 add_feat <- "LRG1"
 FeaturePlot(seu, features = add_feat, cols = c("lightgrey","darkred"), 
-            # pt.size = 1, order = TRUE,
+            pt.size = 2, order = TRUE,
             max.cutoff = "q25", min.cutoff = "q0"
 ) + NoAxes() 
-ggsave(paste0(add_feat, ".png"), path = fp_path, width = 3.6, height = 3, units = "in", dpi = 150)
+ggsave(paste0(add_feat, ".png"), path = fp_path, width = 3.6, height = 3, units = "in", dpi = 300)
+
+VlnPlot(seu, features = c("LRG1"), group.by = "cellgroup", pt.size = 0) # invisible
 
 DotPlot(seu, features = "LRG1", group.by = "cellgroup")
-# ggsave("LRG1_dotplot.png", path = plot_path, width = 4, height = 4, units = "in", dpi = 150)
+ggsave("LRG1_dotplot.png", path = plot_path, width = 4, height = 4, units = "in", dpi = 150)
